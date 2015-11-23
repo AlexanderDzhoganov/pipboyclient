@@ -1,0 +1,1 @@
+module.exports = require("github:yesmeck/jquery-jsonview@1.2.3/dist/jquery.jsonview");

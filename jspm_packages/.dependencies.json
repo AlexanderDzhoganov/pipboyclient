@@ -626,5 +626,6 @@
   },
   "npm:moment@2.10.6": {
     "process": "github:jspm/nodelibs-process@^0.1.0"
-  }
+  },
+  "github:yesmeck/jquery-jsonview@1.2.3": {}
 }

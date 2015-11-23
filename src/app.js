@@ -1,6 +1,9 @@
 import io from 'socket.io-client';
 import moment from 'moment';
 
+import $ from 'jquery';
+import JSONView from 'yesmeck/jquery-jsonview';
+
 export class App {
 
   serverUrl = 'http://localhost:3000';
@@ -10,14 +13,20 @@ export class App {
   connectionError = null;
 
   lastDBUpdateTime = null;
-  db = {};
+  db = null;
 
   player = {
     x: 0.0,
-    y: 0.0
+    y: 0.0,
+    healthPercent: 0,
+    health: 0,
+    maxHealth: 0
   };
 
   worldMapSize = 640;
+
+  tabs = ['STAT', 'INV', 'DATA', 'MAP', 'RADIO'];
+  selectedTab = 'MAP';
 
   bind() {
     this.connecting = true;
@@ -40,7 +49,10 @@ export class App {
       this.db = db;
 
       this.parseDBContents(db);
-      this.redrawWorldMap();
+
+      if(this.selectedTab === 'MAP') {
+        this.redrawWorldMap();
+      }
     }.bind(this));
   }
 
@@ -56,6 +68,10 @@ export class App {
 
     this.player.x = (worldx - extentsMinX) / (extentsMaxX - extentsMinX);
     this.player.y = 1.0 - (worldy - extentsMinY) / (extentsMaxY - extentsMinY);
+
+    this.player.healthPercent = (this.db.PlayerInfo.CurrHP / this.db.PlayerInfo.MaxHP) * 100;
+    this.player.health = this.db.PlayerInfo.CurrHP.toFixed(2);
+    this.player.maxHealth = this.db.PlayerInfo.MaxHP.toFixed(2);
   }
 
   redrawWorldMap() {
@@ -75,6 +91,11 @@ export class App {
     ctx.lineTo(x + 8, y + 16);
     ctx.closePath();
     ctx.fill();
+  }
+
+  debugDB() {
+    $('#db_json').JSONView(this.db);
+    $('#db_json').JSONView('collapse');
   }
 
 }

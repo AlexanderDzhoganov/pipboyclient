@@ -1,26 +1,39 @@
 <template>
-  <h1>Fallout 4 Pip-Boy client</h1>
+  <div class="col-md-12">
+    <h1>
+      Fallout 4 Pip-Boy client
+    </h1>
+    <h3>
+      <label class="label label-success" if.bind="connected">Connected!</label>
+      <label class="label label-warning" if.bind="connecting">Connecting..</label>
+      <label class="label label-danger" if.bind="connectionError">${connectionError}, retrying..</label>
+    </h3>
+  </div>
 
-  <div if.bind="connected">Connected!</div>
-  <div if.bind="connecting">Connecting to server..</div>
-  <div if.bind="connectionError">Failed to connect: ${connectionError}, retrying..</div>
+  <div class="col-md-8">
+    <div>Last DB update: ${lastDBUpdateTime}</div>
 
-  <div>Last DB update: ${lastDBUpdateTime}</div>
+    <h2>${db.PlayerInfo.PlayerName} <label class="label label-info">Level ${db.PlayerInfo.XPLevel}</label></h2>
 
-  <h2>Player</h2>
+    <div>Caps: ${db.PlayerInfo.Caps}</div>
+    <div>
+      HP:
+      <div class="progress">
+        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${player.healthPercent}%;">
+          ${player.health} / ${player.maxHealth}
+        </div>
+      </div>
+    </div>
+    <br/>
 
-  <div>Name: ${db.PlayerInfo.PlayerName}</div>
-  <div>Caps: ${db.PlayerInfo.Caps}</div>
-  <div>HP: ${db.PlayerInfo.CurrHP} / ${db.PlayerInfo.MaxHP}</div>
-  <br/>
+    <ul class="nav nav-pills">
+      <li repeat.for="tab of tabs" role="presentation" class="${$parent.selectedTab === tab ? 'active' : ''}"><a href="#" click.delegate="$parent.selectedTab = tab">${tab}</a></li>
+    </ul>
 
-  <div>WorldX: ${db.Map.World.Player.X}</div>
-  <div>WorldY: ${db.Map.World.Player.Y}</div>
-  <div>WorldRotation: ${db.Map.World.Player.Rotation}</div>
+    <div if.bind="selectedTab === 'MAP'">
+      <canvas id="worldmap" width="1200" height="1200" style="margin: 16px;"></canvas>
+    </div>
 
-  <div>Norm. WorldX: ${player.x}</div>
-  <div>Norm. WorldY: ${player.y}</div>
-
-  <canvas id="worldmap" width="1200" height="1200" style="margin: 16px;"></canvas>
-  <img id="worldmap_image" src="images/worldmap.png" style="display: none; width: 0; height: 0;"/>
+    <img id="worldmap_image" src="images/worldmap.png" style="display: none; width: 0; height: 0;"/>
+  </div>
 </template>
