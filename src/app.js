@@ -55,7 +55,7 @@ export class App {
     var extentsMaxY = db.Map.World.Extents.NWY;
 
     this.player.x = (worldx - extentsMinX) / (extentsMaxX - extentsMinX);
-    this.player.y = (worldy - extentsMinY) / (extentsMaxY - extentsMinY);
+    this.player.y = 1.0 - (worldy - extentsMinY) / (extentsMaxY - extentsMinY);
   }
 
   redrawWorldMap() {
