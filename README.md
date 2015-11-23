@@ -1,5 +1,5 @@
 # pipboyclient
-Fallout 4 PipBoy UI using [pipboyrelay](https://github.com/rgbkrk/pipboyrelay), [socket.io](http://socket.io/) and [Aurelia](https://aurelia.io)
+Fallout 4 PipBoy UI using [pipboyrelay](https://github.com/rgbkrk/pipboyrelay) (with [this patch](https://github.com/rgbkrk/pipboyrelay/pull/5), [socket.io](http://socket.io/) and [Aurelia](https://aurelia.io)
 
 # Running the app
 
