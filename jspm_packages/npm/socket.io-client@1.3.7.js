@@ -1,0 +1,1 @@
+module.exports = require("npm:socket.io-client@1.3.7/index");

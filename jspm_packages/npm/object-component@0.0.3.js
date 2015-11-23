@@ -1,0 +1,1 @@
+module.exports = require("npm:object-component@0.0.3/index");

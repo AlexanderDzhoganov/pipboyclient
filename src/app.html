@@ -1,0 +1,14 @@
+<template>
+  <h1>Fallout 4 Pip-Boy client</h1>
+
+  <div if.bind="connected">Connected!</div>
+  <div if.bind="connecting">Connecting to server..</div>
+  <div if.bind="connectionError">Failed to connect: ${connectionError}, retrying..</div>
+
+  <div>Last DB update: ${lastDBUpdateTime}</div>
+
+  <h2>Player</h2>
+  <div>WorldX: ${db.Map.World.Player.X}</div>
+  <div>WorldY: ${db.Map.World.Player.Y}</div>
+  <div>WorldRotation: ${db.Map.World.Player.Rotation}</div>
+</template>

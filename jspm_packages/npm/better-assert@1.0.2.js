@@ -1,0 +1,1 @@
+module.exports = require("npm:better-assert@1.0.2/index");

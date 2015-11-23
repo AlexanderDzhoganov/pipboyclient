@@ -1,0 +1,1 @@
+module.exports = require("npm:parseuri@0.0.4/index");

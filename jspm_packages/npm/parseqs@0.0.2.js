@@ -1,0 +1,1 @@
+module.exports = require("npm:parseqs@0.0.2/index");

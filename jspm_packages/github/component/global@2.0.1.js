@@ -1,0 +1,1 @@
+module.exports = require("github:component/global@2.0.1/index");

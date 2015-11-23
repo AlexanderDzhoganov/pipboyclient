@@ -1,2 +1,2 @@
 # pipboyclient
-Fallout 4 PipBoy UI using pipboyrelay and Aurelia
+Fallout 4 PipBoy UI using [pipboyrelay](https://github.com/rgbkrk/pipboyrelay) and [Aurelia](https://aurelia.io)
