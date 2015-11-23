@@ -6,3 +6,6 @@ Fallout 4 PipBoy UI using [pipboyrelay](https://github.com/rgbkrk/pipboyrelay), 
 1. `npm install -g http-server`
 2. Run `http-server -o` in the project root
 3. Browse to [http://localhost:8080](http://localhost:8080)
+
+Screenshot:
+![](http://i.imgur.com/KRD1GmS.png)
