@@ -148,12 +148,12 @@ export class App {
   }
 
   useStimpak() {
-    if(!db.Inventory.stimpakObjectIDIsValid) {
+    if(!this.db.Inventory.stimpakObjectIDIsValid) {
       console.error('db.Inventory.stimpakObjectIDIsValid == false');
       return;
     }
 
-    this.socket.emit('command', 'UseItem', [db.Inventory.stimpakObjectID, 0, db.Inventory.Version]);
+    this.socket.emit('command', 'UseItem', [this.db.Inventory.stimpakObjectID, 0, this.db.Inventory.Version]);
   }
 
 }
