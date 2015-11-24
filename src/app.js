@@ -147,4 +147,13 @@ export class App {
     this.socket.emit('command', 'ToggleRadioStation', [radio._index]);
   }
 
+  useStimpak() {
+    if(!db.Inventory.stimpakObjectIDIsValid) {
+      console.error('db.Inventory.stimpakObjectIDIsValid == false');
+      return;
+    }
+
+    this.socket.emit('command', 'UseItem', [db.Inventory.stimpakObjectID, 0, db.Inventory.Version]);
+  }
+
 }

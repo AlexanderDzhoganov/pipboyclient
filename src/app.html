@@ -27,12 +27,12 @@
 
     <div>Caps: ${db.PlayerInfo.Caps}</div>
     <div>
-      HP:
       <div class="progress">
         <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${player.healthPercent}%;">
-          ${player.health} / ${player.maxHealth}
+          HP: ${player.health} / ${player.maxHealth}
         </div>
       </div>
+      <button type="button" class="btn-xs btn-warning" click.delegate="useStimpak()">Use stimpak</button>
     </div>
     <br/>
 
