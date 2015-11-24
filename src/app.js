@@ -14,6 +14,25 @@ export class App {
 
   lastDBUpdateTime = null;
   db = null;
+  _db = null;
+
+  commands = [
+    'UseItem',
+    'DropItem',
+    'SetFavorite',
+    'ToggleComponentFavorite',
+    'SortInventory',
+    'ToggleQuestActive',
+    'SetCustomMapMarker',
+    'RemoveCustomMapMarker',
+    'CheckFastTravel',
+    'FastTravel',
+    'MoveLocalMap',
+    'ZoomLocalMap',
+    'ToggleRadioStation',
+    'RequestLocalMapSnapshot',
+    'ClearIdle'
+  ];
 
   player = {
     x: 0.0,
@@ -27,6 +46,10 @@ export class App {
 
   tabs = ['STAT', 'INV', 'DATA', 'MAP', 'RADIO'];
   selectedTab = 'MAP';
+
+  command = null;
+  commandArgs = '';
+  commandError = null;
 
   bind() {
     this.connecting = true;
@@ -46,14 +69,17 @@ export class App {
 
     this.socket.on('db_update', function(db) {
       this.lastDBUpdateTime = moment(Date.now()).format('HH:mm:ss DD/MM/YYYY');
-      this.db = db;
+      this._db = db;
+    }.bind(this));
 
-      this.parseDBContents(db);
+    setInterval(function() {
+      this.db = this._db;
+      this.parseDBContents(this.db);
 
       if(this.selectedTab === 'MAP') {
         this.redrawWorldMap();
       }
-    }.bind(this));
+    }.bind(this), 500);
   }
 
   parseDBContents(db) {
@@ -96,6 +122,29 @@ export class App {
   debugDB() {
     $('#db_json').JSONView(this.db);
     $('#db_json').JSONView('collapse');
+  }
+
+  sendCommand() {
+    this.commandError = null;
+    var args = null;
+
+    try {
+      args = JSON.parse(this.commandArgs);
+    } catch(err) {
+      this.commandError = 'Failed to parse command args JSON';
+      return;
+    }
+
+    this.socket.emit('command', this.command, args);
+    alert('command sent!');
+  }
+
+  switchToRadio(radio) {
+    if(!radio.inRange || radio.active) {
+      return;
+    }
+
+    this.socket.emit('command', 'ToggleRadioStation', [radio._index]);
   }
 
 }

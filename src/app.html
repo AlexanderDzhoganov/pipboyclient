@@ -13,6 +13,16 @@
   <div class="col-md-8">
     <div>Last DB update: ${lastDBUpdateTime}</div>
 
+    <div>
+      <select value.bind="command">
+        <option repeat.for="command of commands" value="${command}">${command}</option>
+      </select>
+      <label for="commandArgs">Args:</label>
+      <input value.bind="commandArgs" id="commandArgs"/>
+      <button type="button" class="btn btn-primary" click.delegate="sendCommand()">Send</button>
+      <label if.bind="commandError" class="label label-danger">${commandError}</label>
+    </div>
+
     <h2>${db.PlayerInfo.PlayerName} <label class="label label-info">Level ${db.PlayerInfo.XPLevel}</label></h2>
 
     <div>Caps: ${db.PlayerInfo.Caps}</div>
@@ -35,5 +45,16 @@
     </div>
 
     <img id="worldmap_image" src="images/worldmap.png" style="display: none; width: 0; height: 0;"/>
+
+    <div if.bind="selectedTab === 'RADIO'">
+      <div repeat.for="radio of db.Radio">
+        <b>${radio.text}</b>
+        <label if.bind="radio.active" class="label label-success">Active</label>
+        <label if.bind="radio.inRange" class="label label-success">In-range</label>
+        <label if.bind="!radio.inRange" class="label label-warning">Out of range</label>
+
+        <button if.bind="radio.inRange && !radio.active" type="button" class="btn-xs btn-info" click.delegate="switchToRadio(radio)">Listen</button>
+      </div>
+    </div>
   </div>
 </template>
