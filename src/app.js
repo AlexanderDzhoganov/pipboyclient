@@ -4,6 +4,8 @@ import moment from 'moment';
 import $ from 'jquery';
 import JSONView from 'yesmeck/jquery-jsonview';
 
+import shader from 'shader';
+
 export class App {
 
   serverUrl = 'http://localhost:3000';
@@ -43,6 +45,7 @@ export class App {
   };
 
   worldMapSize = 640;
+  showLocalMap = false;
 
   tabs = ['STAT', 'INV', 'DATA', 'MAP', 'RADIO'];
   selectedTab = 'MAP';
@@ -60,6 +63,7 @@ export class App {
       this.connected = true;
       this.connecting = false;
       this.connectionError = null;
+      this.socket.emit('localmap_update');
     }.bind(this))
 
     this.socket.on('connect_error', function(err) {
@@ -72,14 +76,30 @@ export class App {
       this._db = db;
     }.bind(this));
 
+    this.socket.on('localmap_update', function(map) {
+      this.localMap = map;
+
+      if(this.selectedTab === 'MAP' && this.showLocalMap) {
+        this.redrawLocalMap();
+      }
+    }.bind(this));
+
     setInterval(function() {
       this.db = this._db;
       this.parseDBContents(this.db);
 
       if(this.selectedTab === 'MAP') {
-        this.redrawWorldMap();
+        if(!this.showLocalMap) {
+          this.redrawWorldMap();
+        }
       }
-    }.bind(this), 500);
+    }.bind(this), 1000);
+
+    setInterval(function() {
+      if(this.showLocalMap) {
+        this.socket.emit('localmap_update');
+      }
+    }.bind(this), 1000);
   }
 
   parseDBContents(db) {
@@ -117,6 +137,85 @@ export class App {
     ctx.lineTo(x + 8, y + 16);
     ctx.closePath();
     ctx.fill();
+  }
+
+  initLocalMap() {
+    var canvas = document.getElementById('localmap');
+    this.gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if(!this.gl) {
+      console.error('no webgl support');
+      return;
+    }
+
+    var gl = this.gl;
+
+    gl.clearColor(1.0, 0.0, 0.0, 1.0);
+    gl.disable(gl.DEPTH_TEST);
+
+    this.localMapTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.localMapTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    this.fsQuadVBO = gl.createBuffer();
+
+    var vertices = [
+       1.0,  1.0,
+      -1.0,  1.0,
+      -1.0, -1.0,
+      -1.0, -1.0,
+       1.0, -1.0,
+       1.0,  1.0
+    ];
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.fsQuadVBO);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+    this.localMapShader = new shader(gl, $('#localmap-vertshader').html(), $('#localmap-fragshader').html());
+  }
+
+  redrawLocalMap() {
+    if(!this.gl) {
+      this.initLocalMap();
+    }
+
+    if(!this.localMap) {
+      return;
+    }
+
+    var gl = this.gl;
+
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    gl.bindTexture(gl.TEXTURE_2D, this.localMapTexture);
+
+    var data = new Uint8Array(this.localMap.pixels);
+
+    if(data.length != (this.localMap.width * this.localMap.height)) {
+      console.error('texture size mismatch');
+    }
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, this.localMap.width, this.localMap.height,
+      0, gl.LUMINANCE, gl.UNSIGNED_BYTE, data);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.fsQuadVBO);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    this.localMapShader.use();
+    var canvas = document.getElementById('localmap');
+    canvas.width = this.localMap.width;
+    canvas.height = this.localMap.height;
+
+    gl.uniform2f(gl.getUniformLocation(this.localMapShader._program, "screenSize"), canvas.width, canvas.height);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    console.error(gl.getError());
   }
 
   debugDB() {

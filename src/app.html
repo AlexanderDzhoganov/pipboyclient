@@ -1,4 +1,25 @@
 <template>
+<script id="localmap-vertshader" type="x-shader/x-vertex">
+attribute vec2 position;
+
+void main() {
+   gl_Position = vec4(position, 0.0, 1.0);
+}
+</script>
+
+<script id="localmap-fragshader" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D tex;
+uniform vec2 screenSize;
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / screenSize;
+  float c = texture2D(tex, uv).r;
+  gl_FragColor = vec4(c, c, c, 1.0);
+}
+</script>
+
   <div class="col-md-12">
     <h1>
       Fallout 4 Pip-Boy client
@@ -32,7 +53,6 @@
           HP: ${player.health} / ${player.maxHealth}
         </div>
       </div>
-      <button type="button" class="btn-xs btn-warning" click.delegate="useStimpak()">Use stimpak (may crash your game!!!)</button>
     </div>
     <br/>
 
@@ -41,7 +61,13 @@
     </ul>
 
     <div if.bind="selectedTab === 'MAP'">
-      <canvas id="worldmap" width="1200" height="1200" style="margin: 16px;"></canvas>
+      <div>
+        Local map
+        <input type="checkbox" value.bind="showLocalMap">
+      </div>
+
+      <canvas if.bind="!showLocalMap" id="worldmap" width="${worldMapSize}" height="${worldMapSize}" style="margin: 16px;"></canvas>
+      <canvas if.bind="showLocalMap" id="localmap" width="${worldMapSize}" height="${worldMapSize}" style="margin: 16px;"></canvas>
     </div>
 
     <img id="worldmap_image" src="images/worldmap.png" style="display: none; width: 0; height: 0;"/>
