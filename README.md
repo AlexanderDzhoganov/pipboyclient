@@ -1,6 +1,18 @@
 # pipboyclient
 Fallout 4 PipBoy UI using [pipboyrelay](https://github.com/rgbkrk/pipboyrelay) (with [this patch](https://github.com/rgbkrk/pipboyrelay/pull/5)), [socket.io](http://socket.io/) and [Aurelia](https://aurelia.io)
 
+# What works
+
+- [x] World map
+- [x] Local map
+- [x] Radio selection
+- [x] Basic stats
+- [x] Send custom commands (and probably crash the game)
+
+# What doesn't
+
+- [ ] Everything else
+
 # Running the app
 
 1. Setup and run the standalone pipboyrelay client - `node standalone.js`
